@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": "./src"
+  },
+  "include": [
+    "next-env.d.ts",
+    "src",
+    "../../custom.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

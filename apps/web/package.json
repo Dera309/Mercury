@@ -1,0 +1,51 @@
+{
+  "name": "mercury-investment-platform-web",
+  "version": "1.0.0",
+  "description": "A responsive web application for multi-asset investment management.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 3030",
+    "dev:3000": "next dev -p 3000 --port 3000",
+    "dev:3002": "next dev -p 3002 --port 3002",
+    "dev:3003": "next dev -p 3003 --port 3003",
+    "dev:3004": "next dev -p 3004 --port 3004",
+    "dev:3005": "next dev -p 3005 --port 3005",
+    "dev:3006": "next dev -p 3006 --port 3006",
+    "dev:3007": "next dev -p 3007 --port 3007",
+    "dev:3008": "next dev -p 3008 --port 3008",
+    "dev:3009": "next dev -p 3009 --port 3009",
+    "dev:3010": "next dev -p 3010 --port 3010",
+    "dev:3011": "next dev -p 3011 --port 3011",
+    "dev:3020": "next dev -p 3020 --port 3020",
+    "dev:turbo": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --config ../../eslint.config.js"
+  },
+  "dependencies": {
+    "axios": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-redux": "latest",
+    "redux": "latest",
+    "redux-thunk": "latest",
+    "styled-components": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.3.7",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "prettier": "latest",
+    "typescript": "latest"
+  },
+  "keywords": [
+    "investment",
+    "finance",
+    "web",
+    "multi-asset"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

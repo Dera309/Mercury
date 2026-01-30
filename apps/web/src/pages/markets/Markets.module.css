@@ -1,0 +1,188 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.header {
+  margin-bottom: var(--spacing-md);
+}
+
+.header h1 {
+  margin-bottom: var(--spacing-xs);
+}
+
+.header p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Market Indices Grid */
+.indicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.indexCard {
+  padding: var(--spacing-lg);
+}
+
+.indexHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.indexSymbol {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.indexName {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.indexValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.indexChange {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.positive {
+  color: var(--secondary-color);
+}
+
+.negative {
+  color: var(--danger-color);
+}
+
+/* Sector Card */
+.sectorCard {
+  padding: var(--spacing-xl);
+}
+
+.sectorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.sectorItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.sectorBar {
+  height: 8px;
+  background-color: var(--border-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.sectorFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-normal);
+}
+
+.sectorInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sectorName {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.sectorChange {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Stocks Card */
+.stocksCard {
+  padding: var(--spacing-xl);
+}
+
+.searchInput {
+  width: 200px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.stocksTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.stocksTable th,
+.stocksTable td {
+  padding: var(--spacing-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stocksTable th {
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.stocksTable tbody tr {
+  transition: background-color var(--transition-fast);
+}
+
+.stocksTable tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.symbol {
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.name {
+  color: var(--text-secondary);
+}
+
+.alignRight {
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .searchInput {
+    width: 150px;
+  }
+
+  .stocksTable th,
+  .stocksTable td {
+    padding: var(--spacing-sm);
+  }
+
+  .name {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

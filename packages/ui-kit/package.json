@@ -1,0 +1,31 @@
+{
+  "name": "ui-kit",
+  "version": "1.0.0",
+  "description": "A UI kit for the Mercury investment platform, providing reusable components and styles.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --passWithNoTests"
+  },
+  "keywords": [
+    "ui",
+    "components",
+    "design",
+    "kit"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "styled-components": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@types/styled-components": "^5.1.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0"
+  }
+}
