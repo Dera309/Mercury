@@ -72,6 +72,60 @@ cd apps/web
 pnpm run build
 ```
 
+## Deployment to Render
+
+### Option 1: Using Render Blueprint (Recommended)
+Render supports Blueprint deployment via `render.yaml` file.
+
+1. Push your code to GitHub: https://github.com/Dera309/Mercury.git
+2. Log in to [Render Dashboard](https://dashboard.render.com)
+3. Click "New +" and select "Blueprint"
+4. Connect your GitHub repository
+5. Render will automatically detect the `render.yaml` file and configure the services
+6. Add your MongoDB Atlas connection string as an environment variable:
+   - Go to your API service on Render
+   - Click "Environment"
+   - Add `MONGODB_URI` with your MongoDB Atlas connection string
+   - Get a free MongoDB Atlas cluster at https://www.mongodb.com/atlas
+
+### Option 2: Manual Web Service Setup
+
+#### API Service
+1. Create a new Web Service on Render
+2. Connect your GitHub repository
+3. Configure:
+   - **Build Command:** `cd apps/api && npm install && npm run build`
+   - **Start Command:** `npm start`
+   - **Environment Variables:**
+     - `NODE_ENV=production`
+     - `PORT=5000`
+     - `MONGODB_URI` (your MongoDB Atlas connection string)
+     - `JWT_SECRET` (generate a strong secret)
+     - `BCRYPTJS_SALT_ROUNDS=10`
+
+#### Web Service
+1. Create a new Web Service on Render
+2. Connect your GitHub repository
+3. Configure:
+   - **Build Command:** `cd apps/web && npm install && npm run build`
+   - **Start Command:** `npm start`
+   - **Environment Variables:**
+     - `NODE_ENV=production`
+     - `PORT=3000`
+     - `NEXT_PUBLIC_API_URL=https://mercury-api.onrender.com`
+
+### MongoDB Setup
+1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Create a free cluster (M0 tier)
+3. Create a database user with password authentication
+4. Add your IP address to the IP access list (or allow access from anywhere: 0.0.0.0/0)
+5. Get your connection string and add it to Render environment variables
+
+### Accessing the Deployed App
+- **Web App:** https://mercury-web.onrender.com
+- **API:** https://mercury-api.onrender.com
+- **API Health Check:** https://mercury-api.onrender.com/health
+
 ### Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
 
