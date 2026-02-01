@@ -6,6 +6,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "pages",
     "src",
     "../../custom.d.ts"
   ],

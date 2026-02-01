@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './Layout.module.css';
 
 interface LayoutProps {
@@ -9,6 +10,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const navItems = [
     { href: '/', label: 'Home' },
@@ -24,15 +26,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <span className={styles.logoIcon}>💎</span>
             <span className={styles.logoText}>Mercury</span>
           </Link>
-          
+
           <nav className={styles.nav}>
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`${styles.navLink} ${
-                  router.pathname === item.href ? styles.navLinkActive : ''
-                }`}
+                className={`${styles.navLink} ${router.pathname === item.href ? styles.navLinkActive : ''
+                  }`}
               >
                 {item.label}
               </Link>
@@ -40,9 +41,24 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </nav>
 
           <div className={styles.headerActions}>
-            <Link href="/auth/login" className={styles.loginButton}>
-              Sign In
-            </Link>
+            {isAuthenticated && user ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                  {user.email}
+                </span>
+                <button
+                  onClick={logout}
+                  className={styles.loginButton}
+                  style={{ cursor: 'pointer' }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link href="/auth/login" className={styles.loginButton}>
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </header>

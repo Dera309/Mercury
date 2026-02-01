@@ -16,21 +16,25 @@ interface PortfolioState {
 // Action Interfaces
 interface FetchPortfolioRequestAction {
   type: typeof FETCH_PORTFOLIO_REQUEST;
+  [key: string]: any;
 }
 
 interface FetchPortfolioSuccessAction {
   type: typeof FETCH_PORTFOLIO_SUCCESS;
   payload: Portfolio;
+  [key: string]: any;
 }
 
 interface FetchPortfolioFailureAction {
   type: typeof FETCH_PORTFOLIO_FAILURE;
   payload: string;
+  [key: string]: any;
 }
 
 interface UpdateHoldingAction {
   type: typeof UPDATE_HOLDING;
   payload: Holding;
+  [key: string]: any;
 }
 
 type PortfolioAction =

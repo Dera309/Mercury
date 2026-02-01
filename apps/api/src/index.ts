@@ -1,8 +1,18 @@
+// Load environment variables FIRST - before any other imports
+import dotenv from 'dotenv';
+import { join } from 'path';
+
+// When running with ts-node, __dirname is src/, so we need to go up one level to find .env
+dotenv.config({ path: join(__dirname, '..', '.env') });
+// Also try loading from current working directory as fallback
+if (!process.env.JWT_SECRET) {
+  dotenv.config();
+}
+
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { writeFileSync, appendFileSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { dirname } from 'path';
 import mongoose from 'mongoose';
 import { connectDatabase } from './config/database';
 import { errorHandler } from './middlewares/errorHandler';
@@ -35,8 +45,7 @@ import mockPortfolioRoutes from './routes/mockPortfolioRoutes';
 import marketRoutes from './routes/marketRoutes';
 import tradingRoutes from './routes/tradingRoutes';
 
-// Load environment variables
-dotenv.config({ path: join(__dirname, '..', '.env') });
+
 
 const app: Express = express();
 const PORT = process.env.PORT || 3001;
@@ -45,9 +54,57 @@ logDebug({ location: 'index.ts:22', message: 'Express app created', data: { port
 // #endregion
 
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+
+// SECURITY: Configure CORS with allowed origins whitelist
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3030',
+  'http://localhost:3002',
+  process.env.FRONTEND_URL, // Allow custom frontend URL from env
+  'https://mercury-investment-platform.com', // Production domain
+  'https://www.mercury-investment-platform.com', // WWW subdomain
+].filter(Boolean) as string[];
+
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (mobile apps, Postman, server-to-server)
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked request from origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+// Middleware
+app.use(helmet()); // Security headers
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10kb' })); // Limit body size to prevent DoS
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes',
+  },
+});
+
+// Apply rate limiting to all requests
+app.use(limiter);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
@@ -87,9 +144,17 @@ const startServer = async () => {
     useMockData = true; // Use mock data when DB fails
   }
 
+  // SECURITY: Block mock routes in production
+  const isProduction = process.env.NODE_ENV === 'production';
+
   // Configure routes based on DB connection status
   if (useMockData) {
-    console.log('🔧 Registering MOCK routes...');
+    if (isProduction) {
+      console.error('🚨 CRITICAL: Cannot use mock routes in production! Database connection is required.');
+      console.error('💡 Please configure MONGODB_URI in your environment variables.');
+      process.exit(1); // Exit with error - production MUST have database
+    }
+    console.log('🔧 Registering MOCK routes (development only)...');
     app.use('/api/auth', mockAuthRoutes);
     app.use('/api/portfolio', mockPortfolioRoutes);
   } else {

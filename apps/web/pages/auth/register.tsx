@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../src/store';
 import { authApi } from '../../src/services/api';
 import { loginSuccess } from '../../src/store/slices/authActionCreators';
 import styles from './login.module.css';
@@ -13,7 +14,7 @@ const RegisterPage = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

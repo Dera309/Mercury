@@ -28,16 +28,16 @@ services:
       - db
 
   db:
-    image: postgres:latest
+    image: mongo:7
     restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: investment_db
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: mercury-investment
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/mongodb/data
 
 volumes:
   db_data:

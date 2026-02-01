@@ -16,18 +16,30 @@ spec:
     spec:
       containers:
         - name: web
-          image: your-docker-repo/mercury-web:latest
+          image: docker.io/mercury/mercury-web:latest
           ports:
             - containerPort: 3000
           env:
             - name: NODE_ENV
               value: production
+            - name: NEXT_PUBLIC_API_URL
+              value: https://api.your-domain.com/api
         - name: api
-          image: your-docker-repo/mercury-api:latest
+          image: docker.io/mercury/mercury-api:latest
           ports:
             - containerPort: 4000
           env:
             - name: NODE_ENV
               value: production
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: uri
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: secret
       imagePullSecrets:
         - name: regcred

@@ -18,6 +18,7 @@ interface MarketState {
 // Action Interfaces
 interface FetchMarketDataRequestAction {
   type: typeof FETCH_MARKET_DATA_REQUEST;
+  [key: string]: any;
 }
 
 interface FetchMarketDataSuccessAction {
@@ -27,11 +28,13 @@ interface FetchMarketDataSuccessAction {
     stocks: Stock[];
     sectors: Sector[];
   };
+  [key: string]: any;
 }
 
 interface FetchMarketDataFailureAction {
   type: typeof FETCH_MARKET_DATA_FAILURE;
   payload: string;
+  [key: string]: any;
 }
 
 interface UpdateStockPriceAction {
@@ -41,6 +44,7 @@ interface UpdateStockPriceAction {
     price: number;
     change: number;
   };
+  [key: string]: any;
 }
 
 type MarketAction =
@@ -91,10 +95,10 @@ const marketReducer = (
         stocks: state.stocks.map((stock) =>
           stock.symbol === action.payload.symbol
             ? {
-                ...stock,
-                price: action.payload.price,
-                change: action.payload.change,
-              }
+              ...stock,
+              price: action.payload.price,
+              change: action.payload.change,
+            }
             : stock
         ),
       };

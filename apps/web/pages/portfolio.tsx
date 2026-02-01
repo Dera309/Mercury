@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../src/store';
+import { RootState, AppDispatch } from '../src/store';
 import { portfolioApi } from '../src/services/api';
 import { fetchPortfolioRequest, fetchPortfolioSuccess, fetchPortfolioFailure } from '../src/store/slices/portfolioSlice';
 import { Layout } from '../src/components/layout';
@@ -9,7 +9,7 @@ import { Card } from '../src/components/ui';
 
 const PortfolioPage = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { portfolio, isLoading, error } = useSelector((state: RootState) => state.portfolio);
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
@@ -69,7 +69,7 @@ const PortfolioPage = () => {
       <div style={{ padding: '2rem' }}>
         <h1>Portfolio</h1>
         <p>Welcome back, {user?.firstName}!</p>
-        
+
         {portfolio ? (
           <div style={{ marginTop: '2rem' }}>
             <Card>
