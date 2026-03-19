@@ -52,8 +52,8 @@ const SupportPage = () => {
                             </Card>
                             <Card>
                                 <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>How can I reset my password?</h3>
-                                <p style={{ color: '#666' }}>
-                                    You can reset your password from the login page by clicking "Forgot Password". Follow the instructions sent to your email.
+                                 <p style={{ color: '#666' }}>
+                                    You can reset your password from the login page by clicking &quot;Forgot Password&quot;. Follow the instructions sent to your email.
                                 </p>
                             </Card>
                         </div>

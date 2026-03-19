@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../src/store';
@@ -128,7 +129,7 @@ const RegisterPage = () => {
                 </button>
             </form>
             <p>
-                Already have an account? <a href="/auth/login">Login here</a>
+                Already have an account? <Link href="/auth/login">Login here</Link>
             </p>
         </div>
     );

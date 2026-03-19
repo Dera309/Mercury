@@ -14,33 +14,30 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Install dependencies
-        run: |
-          cd apps/web
-          npm install
-          cd ../api
-          npm install
+        run: pnpm install
+
+      - name: Run linting
+        run: pnpm lint
 
       - name: Run tests
-        run: |
-          cd apps/web
-          npm test
-          cd ../api
-          npm test
+        run: pnpm test
 
       - name: Build application
-        run: |
-          cd apps/web
-          npm run build
-          cd ../api
-          npm run build
+        run: pnpm build
 
       - name: Deploy
-        run: echo "Deploying application..." # Placeholder for deployment step
+        if: github.ref == 'refs/heads/main'
+        run: echo "Deploying application to Render..." # Integrate Render deploy hook here if available
