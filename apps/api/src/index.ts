@@ -69,14 +69,24 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Allow requests with no origin (mobile apps, Postman, server-to-server)
-    if (!origin) {
-      return callback(null, true);
-    }
+    if (!origin) return callback(null, true);
+
+    console.log('🔍 CORS Debug Info:');
+    console.log(`   - Incoming Origin: "${origin}"`);
+    console.log(`   - Allowed Origins: ${JSON.stringify(allowedOrigins)}`);
+    
     if (allowedOrigins.includes(origin)) {
+      console.log('   ✅ CORS match found');
       callback(null, true);
     } else {
-      console.warn(`🚨 CORS blocked request from origin: ${origin}`);
+      // Temporary fallback for easier debugging on Render: 
+      // If it's an .onrender.com domain, let's allow it but warn.
+      if (origin.endsWith('.onrender.com')) {
+        console.warn(`   ⚠️  CORS: Dynamic match for ${origin} (onrender.com)`);
+        return callback(null, true);
+      }
+      
+      console.warn(`   🚨 CORS blocked: "${origin}" NOT in list`);
       callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
