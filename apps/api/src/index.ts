@@ -161,13 +161,17 @@ const startServer = async () => {
 
   // SECURITY: Block mock routes in production
   const isProduction = process.env.NODE_ENV === 'production';
+  const allowMockInProd = process.env.ALLOW_MOCK_IN_PROD === 'true';
 
   // Configure routes based on DB connection status
   if (useMockData) {
     if (isProduction) {
-      console.error('🚨 CRITICAL: Cannot use mock routes in production! Database connection is required.');
-      console.error('💡 Please configure MONGODB_URI in your environment variables.');
-      process.exit(1); // Exit with error - production MUST have database
+      if (!allowMockInProd) {
+        console.error('🚨 CRITICAL: MongoDB connection failed in production.');
+        console.error('💡 Refusing to start without DB. Either fix Atlas network access or set ALLOW_MOCK_IN_PROD=true.');
+        process.exit(1); // production MUST have database unless explicitly allowed
+      }
+      console.warn('⚠️ Starting with MOCK auth routes because ALLOW_MOCK_IN_PROD=true');
     }
     console.log('🔧 Registering MOCK routes (development only)...');
     app.use('/api/auth', mockAuthRoutes);

@@ -11,6 +11,8 @@ services:
         value: production
       - key: PORT
         value: 3001
+      - key: ALLOW_MOCK_IN_PROD
+        value: "true"
       - key: FRONTEND_URL
         sync: false # Should be the URL of the mercury-web service
       - key: MONGODB_URI
