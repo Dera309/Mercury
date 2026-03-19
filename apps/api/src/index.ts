@@ -65,9 +65,17 @@ app.use((req, res, next) => {
   
   if (req.method === 'OPTIONS') {
     console.log(`✨ MANUAL OPTIONS HANDLER: Responding to preflight from ${origin}`);
+    // Reflect the incoming Origin (required when using credentials).
+    // If Origin is missing, fall back to a permissive wildcard.
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    // Echo back requested headers when possible; otherwise, use the known set.
+    const requestedHeaders = req.header('Access-Control-Request-Headers');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      requestedHeaders || 'Content-Type, Authorization, X-Requested-With'
+    );
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     return res.sendStatus(204);
   }

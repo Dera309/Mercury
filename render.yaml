@@ -4,8 +4,8 @@ services:
     name: mercury-api
     runtime: node
     plan: free
-    buildCommand: pnpm install && pnpm --filter mercury-investment-platform-api build
-    startCommand: pnpm --filter mercury-investment-platform-api start
+    buildCommand: npm install && npm run build --workspace=mercury-investment-platform-api
+    startCommand: npm run start --workspace=mercury-investment-platform-api
     envVars:
       - key: NODE_ENV
         value: production
@@ -25,10 +25,12 @@ services:
     name: mercury-web
     runtime: node
     plan: free
-    buildCommand: pnpm install && pnpm --filter mercury-investment-platform-web build
-    startCommand: pnpm --filter mercury-investment-platform-web start
+    buildCommand: npm install && npm run build --workspace=mercury-investment-platform-web
+    startCommand: npm run start --workspace=mercury-investment-platform-web
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 3000
       - key: NEXT_PUBLIC_API_URL
         sync: false # Needs to point to the mercury-api URL
