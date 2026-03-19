@@ -2,20 +2,24 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 import { ApiResponse, Portfolio, MarketIndex, Stock, Sector, User, LoginCredentials, Transaction } from '../types';
 
 // API Configuration
-// For production, this should be the full URL of your Render API (e.g., https://mercury-api.onrender.com)
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
-  (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001');
+// In Next.js, NEXT_PUBLIC_ variables are baked in at build time.
+// If this is 'localhost' on a public Render URL, it will fail due to CORS/Private Network Access.
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 if (typeof window !== 'undefined') {
   console.log('🚀 API Service Initialized');
+  console.log('📍 Current Origin:', window.location.origin);
   console.log('📍 API_BASE_URL:', API_BASE_URL);
-  console.log('🌐 Environment:', process.env.NODE_ENV);
-  console.log('🔑 NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+  
+  if (window.location.hostname !== 'localhost' && API_BASE_URL.includes('localhost')) {
+    console.warn('🚨 WARNING: You are running in production but your API URL is still set to localhost!');
+    console.warn('💡 ACTION REQUIRED: Set NEXT_PUBLIC_API_URL in your Render Environment Variables to your API URL (e.g., https://mercury-api.onrender.com/api) and REBUILD your web service.');
+  }
 }
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL.endsWith('/api') ? API_BASE_URL.slice(0, -4) : API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
