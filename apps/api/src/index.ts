@@ -57,56 +57,37 @@ logDebug({ location: 'index.ts:22', message: 'Express app created', data: { port
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
-// SECURITY: Configure CORS with allowed origins whitelist
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3030',
-  'http://localhost:3002',
-  (process.env.FRONTEND_URL || '').replace(/\/$/, ''), // Allow custom frontend URL from env
-  'https://mercury-investment-platform.com', // Production domain
-  'https://www.mercury-investment-platform.com', // WWW subdomain
-].filter(Boolean) as string[];
-
-const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin) return callback(null, true);
-
-    console.log('🔍 CORS Debug Info:');
-    console.log(`   - Incoming Origin: "${origin}"`);
-    console.log(`   - Allowed Origins: ${JSON.stringify(allowedOrigins)}`);
-    
-    if (allowedOrigins.includes(origin)) {
-      console.log('   ✅ CORS match found');
-      callback(null, true);
-    } else {
-      // Temporary fallback for easier debugging on Render: 
-      // If it's an .onrender.com domain, let's allow it but warn.
-      if (origin.endsWith('.onrender.com')) {
-        console.warn(`   ⚠️  CORS: Dynamic match for ${origin} (onrender.com)`);
-        return callback(null, true);
-      }
-      
-      console.warn(`   🚨 CORS blocked: "${origin}" NOT in list`);
-      callback(new Error(`Not allowed by CORS: ${origin}`));
-    }
+// CORS: Allow everything during debugging
+// IMPORTANT: This is for diagnostics. We will tighten it back once we see it working.
+app.use(cors({
+  origin: (origin, callback) => {
+    console.log(`🔍 PERMISSIVE CORS: Allowing origin "${origin}"`);
+    callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-};
+}));
+
+// SECURITY: Helmet headers
+app.use(helmet()); 
+
+// Logger
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} | Origin: ${req.header('Origin')}`);
+  next();
+});
 
 // Middleware
-app.use(helmet()); // Security headers
-app.use(cors(corsOptions));
-app.use(express.json({ limit: '10kb' })); // Limit body size to prevent DoS
+app.use(express.json({ limit: '10kb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  standardHeaders: true, 
+  legacyHeaders: false, 
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again after 15 minutes',
@@ -115,12 +96,6 @@ const limiter = rateLimit({
 
 // Apply rate limiting to all requests
 app.use(limiter);
-
-// Global request logger for debugging
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  next();
-});
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
