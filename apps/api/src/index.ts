@@ -57,11 +57,27 @@ logDebug({ location: 'index.ts:22', message: 'Express app created', data: { port
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
+// MANUAL CORS DIAGNOSTIC (Top of stack)
+app.use((req, res, next) => {
+  const origin = req.header('Origin');
+  const host = req.header('Host');
+  console.log(`📡 Incoming Request: ${req.method} ${req.url} | Host: ${host} | Origin: ${origin}`);
+  
+  if (req.method === 'OPTIONS') {
+    console.log(`✨ MANUAL OPTIONS HANDLER: Responding to preflight from ${origin}`);
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 // CORS: Allow everything during debugging
-// IMPORTANT: This is for diagnostics. We will tighten it back once we see it working.
 app.use(cors({
   origin: (origin, callback) => {
-    console.log(`🔍 PERMISSIVE CORS: Allowing origin "${origin}"`);
+    console.log(`🔍 CORS MIDDLEWARE: Processing origin "${origin}"`);
     callback(null, true);
   },
   credentials: true,
