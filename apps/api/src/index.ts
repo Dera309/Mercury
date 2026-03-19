@@ -173,12 +173,10 @@ const startServer = async () => {
   app.use('/api/market', marketRoutes);
   app.use('/api/trading', tradingRoutes);
 
-  // Catch unhandled promise rejections - register after routes
+  // Catch unhandled route requests
   app.use((req: Request, res: Response, next: NextFunction) => {
-    // #region agent log
-    logDebug({ location: 'index.ts:48', message: 'Route not found handler', data: { path: req.path, method: req.method }, sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' });
-    // #endregion
-    const error: any = new Error('Route not found');
+    console.error(`[404 NOT FOUND] ${req.method} ${req.originalUrl}`);
+    const error: any = new Error(`Route not found: ${req.method} ${req.originalUrl}`);
     error.statusCode = 404;
     next(error);
   });

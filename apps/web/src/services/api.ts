@@ -4,7 +4,7 @@ import { ApiResponse, Portfolio, MarketIndex, Stock, Sector, User, LoginCredenti
 // API Configuration
 // In Next.js, NEXT_PUBLIC_ variables are baked in at build time.
 // If this is 'localhost' on a public Render URL, it will fail due to CORS/Private Network Access.
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 if (typeof window !== 'undefined') {
   console.log('🚀 API Service Initialized');
@@ -19,7 +19,7 @@ if (typeof window !== 'undefined') {
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL.endsWith('/api') ? API_BASE_URL.slice(0, -4) : API_BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -75,7 +75,7 @@ export const authApi = {
   },
 
   register: async (data: LoginCredentials & { firstName: string; lastName: string }): Promise<ApiResponse<{ user: User; token: string }>> => {
-    console.log('Sending register request to:', API_BASE_URL + '/api/auth/register', 'with data:', { ...data, password: '***' });
+    console.log('Sending register request to:', API_BASE_URL + '/auth/register', 'with data:', { ...data, password: '***' });
     try {
       const response = await apiClient.post('/auth/register', data);
       return response.data;
