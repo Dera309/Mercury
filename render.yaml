@@ -2,7 +2,7 @@ services:
   # API Backend
   - type: web
     name: mercury-api
-    env: node
+    runtime: node
     plan: free
     buildCommand: pnpm install && pnpm --filter mercury-investment-platform-api build
     startCommand: pnpm --filter mercury-investment-platform-api start
@@ -11,6 +11,8 @@ services:
         value: production
       - key: PORT
         value: 3001
+      - key: FRONTEND_URL
+        sync: false # Should be the URL of the mercury-web service
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
@@ -21,7 +23,7 @@ services:
   # Web Frontend (Next.js SSR)
   - type: web
     name: mercury-web
-    env: node
+    runtime: node
     plan: free
     buildCommand: pnpm install && pnpm --filter mercury-investment-platform-web build
     startCommand: pnpm --filter mercury-investment-platform-web start

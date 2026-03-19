@@ -2,7 +2,11 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 import { ApiResponse, Portfolio, MarketIndex, Stock, Sector, User, LoginCredentials, Transaction } from '../types';
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// For production, this should be the full URL of your Render API (e.g., https://mercury-api.onrender.com)
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001');
+
+console.log('API Service initialized with URL:', API_BASE_URL);
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -62,8 +66,24 @@ export const authApi = {
   },
 
   register: async (data: LoginCredentials & { firstName: string; lastName: string }): Promise<ApiResponse<{ user: User; token: string }>> => {
-    const response = await apiClient.post('/auth/register', data);
-    return response.data;
+    console.log('Sending register request to:', API_BASE_URL + '/api/auth/register', 'with data:', { ...data, password: '***' });
+    try {
+      const response = await apiClient.post('/auth/register', data);
+      return response.data;
+    } catch (error) {
+      console.error('Register API error:', error);
+      if (error instanceof AxiosError) {
+        console.error('Axios error details:', {
+          message: error.message,
+          code: error.code,
+          response: error.response?.data,
+          status: error.response?.status,
+          configUrl: error.config?.url,
+          configBaseUrl: error.config?.baseURL
+        });
+      }
+      throw error;
+    }
   },
 
   logout: async (): Promise<void> => {
