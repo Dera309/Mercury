@@ -4,7 +4,8 @@ import { ApiResponse, Portfolio, MarketIndex, Stock, Sector, User, LoginCredenti
 // API Configuration
 // In Next.js, NEXT_PUBLIC_ variables are baked in at build time.
 // If this is 'localhost' on a public Render URL, it will fail due to CORS/Private Network Access.
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+// Resilience: Clean up trailing dots or slashes from the env var
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api').replace(/[.\/]+$/, '');
 
 if (typeof window !== 'undefined') {
   console.log('🚀 API Service Initialized');

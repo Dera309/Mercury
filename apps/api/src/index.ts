@@ -62,7 +62,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3030',
   'http://localhost:3002',
-  process.env.FRONTEND_URL, // Allow custom frontend URL from env
+  (process.env.FRONTEND_URL || '').replace(/\/$/, ''), // Allow custom frontend URL from env
   'https://mercury-investment-platform.com', // Production domain
   'https://www.mercury-investment-platform.com', // WWW subdomain
 ].filter(Boolean) as string[];
@@ -76,8 +76,8 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.warn(`CORS blocked request from origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      console.warn(`🚨 CORS blocked request from origin: ${origin}`);
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,
