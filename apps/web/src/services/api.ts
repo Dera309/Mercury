@@ -6,7 +6,12 @@ import { ApiResponse, Portfolio, MarketIndex, Stock, Sector, User, LoginCredenti
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
   (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001');
 
-console.log('API Service initialized with URL:', API_BASE_URL);
+if (typeof window !== 'undefined') {
+  console.log('🚀 API Service Initialized');
+  console.log('📍 API_BASE_URL:', API_BASE_URL);
+  console.log('🌐 Environment:', process.env.NODE_ENV);
+  console.log('🔑 NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+}
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({

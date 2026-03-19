@@ -106,6 +106,12 @@ const limiter = rateLimit({
 // Apply rate limiting to all requests
 app.use(limiter);
 
+// Global request logger for debugging
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
   res.json({
