@@ -10,7 +10,7 @@ if (!process.env.JWT_SECRET) {
 }
 
 import express, { Express, Request, Response, NextFunction } from 'express';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import { writeFileSync, appendFileSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 import mongoose from 'mongoose';
@@ -57,44 +57,51 @@ logDebug({ location: 'index.ts:22', message: 'Express app created', data: { port
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
-// MANUAL CORS DIAGNOSTIC (Top of stack)
-app.use((req, res, next) => {
-  const origin = req.header('Origin');
-  const host = req.header('Host');
-  console.log(`📡 Incoming Request: ${req.method} ${req.url} | Host: ${host} | Origin: ${origin}`);
-  
-  if (req.method === 'OPTIONS') {
-    console.log(`✨ MANUAL OPTIONS HANDLER: Responding to preflight from ${origin}`);
-    // Reflect the incoming Origin (required when using credentials).
-    // If Origin is missing, fall back to a permissive wildcard.
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    // Echo back requested headers when possible; otherwise, use the known set.
-    const requestedHeaders = req.header('Access-Control-Request-Headers');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      requestedHeaders || 'Content-Type, Authorization, X-Requested-With'
-    );
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    return res.sendStatus(204);
-  }
-  next();
-});
+// CORS
+// In production, explicitly allow your deployed web origin.
+// In development, allow localhost origins.
+const allowedOrigins = new Set(
+  (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean)
+);
 
-// CORS: Allow everything during debugging
-app.use(cors({
+// Always allow the deployed web origin by default
+allowedOrigins.add('https://mercury-web-nmeb.onrender.com');
+
+// Common local dev origins
+allowedOrigins.add('http://localhost:3000');
+allowedOrigins.add('http://localhost:3030');
+allowedOrigins.add('http://127.0.0.1:3000');
+allowedOrigins.add('http://127.0.0.1:3030');
+
+const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    console.log(`🔍 CORS MIDDLEWARE: Processing origin "${origin}"`);
-    callback(null, true);
+    // Non-browser requests may not send Origin; allow them.
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.has(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-}));
+  optionsSuccessStatus: 204,
+};
+
+// IMPORTANT: CORS must come before routes and before any middleware that might
+// respond early (rate-limit, auth, etc.)
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // SECURITY: Helmet headers
-app.use(helmet()); 
+app.use(helmet());
 
 // Logger
 app.use((req: Request, res: Response, next: NextFunction) => {
